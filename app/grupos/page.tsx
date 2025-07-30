@@ -3,19 +3,13 @@
 import type React from "react"
 
 import { useState } from "react"
-import Link from "next/link"
 import {
   Search,
   Plus,
-  Phone,
   Building,
-  User,
   Edit,
   Trash2,
   Users,
-  GraduationCap,
-  Bell,
-  UserPlus,
   MoreHorizontal,
   Eye,
   Crown,
@@ -23,7 +17,6 @@ import {
   Briefcase,
   FlaskConical,
   Settings,
-  LogOut,
   Star,
   UserCheck,
 } from "lucide-react"
@@ -40,6 +33,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Sidebar } from "@/components/sidebar"
 
 interface Group {
   id: number
@@ -160,7 +154,7 @@ const categories = ["Todos", "Normal", "Evento"]
 export default function GroupsPage() {
   const [groups, setGroups] = useState<Group[]>(initialGroups)
   const [searchTerm, setSearchTerm] = useState("")
-  const [selectedType, setSelectedType] = useState("Todos")
+  const [selectedType, setSelectedType] = useState<string>("Todos")
   const [selectedStatus, setSelectedStatus] = useState("Todos")
   const [selectedCategory, setSelectedCategory] = useState("Todos")
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -173,8 +167,8 @@ export default function GroupsPage() {
     type: "",
     category: "Normal" as "Normal" | "Evento",
     coordinator: "",
-    status: "Activo" as "Activo" | "Inactivo",
     eventType: "",
+    status: "Activo" as "Activo" | "Inactivo",
   })
 
   const filteredGroups = groups.filter((group) => {
@@ -200,15 +194,7 @@ export default function GroupsPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
-    const selectedStudents = availableStudents.filter((student) => selectedMembers.includes(student.id))
-    const members: Member[] = selectedStudents.map((student) => ({
-      id: student.id,
-      name: student.name,
-      email: student.email,
-      career: student.career,
-      year: student.year,
-      avatar: student.avatar,
-    }))
+    const selectedStudentsList = availableStudents.filter((student) => selectedMembers.includes(student.id))
 
     if (editingGroup) {
       setGroups(
@@ -217,7 +203,7 @@ export default function GroupsPage() {
             ? {
                 ...group,
                 ...formData,
-                members,
+                members: selectedStudentsList,
               }
             : group,
         ),
@@ -226,7 +212,7 @@ export default function GroupsPage() {
       const newGroup: Group = {
         id: Date.now(),
         ...formData,
-        members,
+        members: selectedStudentsList,
         createdDate: new Date().toISOString().split("T")[0],
       }
       setGroups([...groups, newGroup])
@@ -242,8 +228,8 @@ export default function GroupsPage() {
       type: "",
       category: "Normal",
       coordinator: "",
-      status: "Activo",
       eventType: "",
+      status: "Activo",
     })
     setSelectedMembers([])
     setMemberSearchTerm("")
@@ -259,8 +245,8 @@ export default function GroupsPage() {
       type: group.type,
       category: group.category,
       coordinator: group.coordinator,
-      status: group.status,
       eventType: group.eventType || "",
+      status: group.status,
     })
     setSelectedMembers(group.members.map((m) => m.id))
     setIsDialogOpen(true)
@@ -303,82 +289,10 @@ export default function GroupsPage() {
     return status === "Activo" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
   }
 
-  const handleLogout = () => {
-    console.log("Cerrando sesión...")
-  }
-
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
-      <div className="w-64 bg-gradient-to-b from-green-500 to-green-600 text-white flex flex-col">
-        <div className="p-4 border-b border-green-400">
-          <h2 className="text-lg font-semibold">Agenda UML</h2>
-        </div>
-
-        <nav className="flex-1 p-2">
-          <Link
-            href="/agenda"
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors mb-1 text-green-100 hover:bg-white/10 hover:text-white"
-          >
-            <Phone className="w-4 h-4" />
-            Agenda telefónica
-          </Link>
-          <Link
-            href="/usuarios"
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors mb-1 text-green-100 hover:bg-white/10 hover:text-white"
-          >
-            <Users className="w-4 h-4" />
-            Usuarios
-          </Link>
-          <Link
-            href="/grupos"
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors mb-1 bg-white/20 text-white font-medium"
-          >
-            <Building className="w-4 h-4" />
-            Grupos
-          </Link>
-          <Link
-            href="/carreras"
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors mb-1 text-green-100 hover:bg-white/10 hover:text-white"
-          >
-            <GraduationCap className="w-4 h-4" />
-            Carreras
-          </Link>
-          <Link
-            href="/perfil"
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors mb-1 text-green-100 hover:bg-white/10 hover:text-white"
-          >
-            <User className="w-4 h-4" />
-            Perfil
-          </Link>
-          <Link
-            href="/notificaciones"
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors mb-1 text-green-100 hover:bg-white/10 hover:text-white"
-          >
-            <Bell className="w-4 h-4" />
-            Notificación
-            <Badge className="bg-red-500 text-white text-xs ml-auto">3</Badge>
-          </Link>
-          <Link
-            href="/invitaciones"
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors mb-1 text-green-100 hover:bg-white/10 hover:text-white"
-          >
-            <UserPlus className="w-4 h-4" />
-            Invitación
-          </Link>
-        </nav>
-
-        {/* Logout Button */}
-        <div className="p-2 border-t border-green-400">
-          <button
-            onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors text-green-100 hover:bg-red-500/20 hover:text-white"
-          >
-            <LogOut className="w-4 h-4" />
-            Cerrar Sesión
-          </button>
-        </div>
-      </div>
+      <Sidebar />
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
@@ -664,6 +578,7 @@ export default function GroupsPage() {
                       <TableHead className="font-semibold">Tipo</TableHead>
                       <TableHead className="font-semibold">Coordinador</TableHead>
                       <TableHead className="font-semibold">Miembros</TableHead>
+                      <TableHead className="font-semibold">Carreras</TableHead>
                       <TableHead className="font-semibold">Estado</TableHead>
                       <TableHead className="w-20"></TableHead>
                     </TableRow>
@@ -722,6 +637,22 @@ export default function GroupsPage() {
                               )}
                             </div>
                             <span className="text-sm text-gray-600">({group.members.length})</span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex flex-wrap gap-1">
+                            {Array.from(new Set(group.members.map((m) => m.career)))
+                              .slice(0, 2)
+                              .map((career) => (
+                                <Badge key={career} variant="outline" className="text-xs">
+                                  {career}
+                                </Badge>
+                              ))}
+                            {Array.from(new Set(group.members.map((m) => m.career))).length > 2 && (
+                              <Badge variant="outline" className="text-xs">
+                                +{Array.from(new Set(group.members.map((m) => m.career))).length - 2}
+                              </Badge>
+                            )}
                           </div>
                         </TableCell>
                         <TableCell>

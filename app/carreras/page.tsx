@@ -3,25 +3,7 @@
 import type React from "react"
 
 import { useState } from "react"
-import Link from "next/link"
-import {
-  Search,
-  Plus,
-  Edit,
-  Trash2,
-  Users,
-  GraduationCap,
-  MoreHorizontal,
-  Eye,
-  BookOpen,
-  Award,
-  Phone,
-  Building,
-  User,
-  Bell,
-  UserPlus,
-  LogOut,
-} from "lucide-react"
+import { Search, Plus, Edit, Trash2, Users, GraduationCap, MoreHorizontal, Eye, BookOpen, Award } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
@@ -33,6 +15,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Textarea } from "@/components/ui/textarea"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Sidebar } from "@/components/sidebar"
 
 interface CareerSection {
   id: number
@@ -362,10 +345,6 @@ export default function CareersPage() {
     setCareerSections(careerSections.filter((section) => section.id !== id))
   }
 
-  const handleLogout = () => {
-    console.log("Cerrando sesión...")
-  }
-
   const getFacultyColor = (faculty: string) => {
     const colors = {
       Ingeniería: "bg-blue-100 text-blue-800 border-blue-200",
@@ -421,75 +400,7 @@ export default function CareersPage() {
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
-      <div className="w-64 bg-gradient-to-b from-green-500 to-green-600 text-white flex flex-col">
-        <div className="p-4 border-b border-green-400">
-          <h2 className="text-lg font-semibold">Agenda UML</h2>
-        </div>
-
-        <nav className="flex-1 p-2">
-          <Link
-            href="/agenda"
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors mb-1 text-green-100 hover:bg-white/10 hover:text-white"
-          >
-            <Phone className="w-4 h-4" />
-            Agenda telefónica
-          </Link>
-          <Link
-            href="/usuarios"
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors mb-1 text-green-100 hover:bg-white/10 hover:text-white"
-          >
-            <Users className="w-4 h-4" />
-            Usuarios
-          </Link>
-          <Link
-            href="/grupos"
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors mb-1 text-green-100 hover:bg-white/10 hover:text-white"
-          >
-            <Building className="w-4 h-4" />
-            Grupos
-          </Link>
-          <Link
-            href="/carreras"
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors mb-1 bg-white/20 text-white font-medium"
-          >
-            <GraduationCap className="w-4 h-4" />
-            Carreras
-          </Link>
-          <Link
-            href="/perfil"
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors mb-1 text-green-100 hover:bg-white/10 hover:text-white"
-          >
-            <User className="w-4 h-4" />
-            Perfil
-          </Link>
-          <Link
-            href="/notificaciones"
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors mb-1 text-green-100 hover:bg-white/10 hover:text-white"
-          >
-            <Bell className="w-4 h-4" />
-            Notificación
-            <Badge className="bg-red-500 text-white text-xs ml-auto">3</Badge>
-          </Link>
-          <Link
-            href="/invitaciones"
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors mb-1 text-green-100 hover:bg-white/10 hover:text-white"
-          >
-            <UserPlus className="w-4 h-4" />
-            Invitación
-          </Link>
-        </nav>
-
-        {/* Logout Button */}
-        <div className="p-2 border-t border-green-400">
-          <button
-            onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors text-green-100 hover:bg-red-500/20 hover:text-white"
-          >
-            <LogOut className="w-4 h-4" />
-            Cerrar Sesión
-          </button>
-        </div>
-      </div>
+      <Sidebar />
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">

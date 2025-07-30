@@ -3,8 +3,20 @@
 import type React from "react"
 
 import { useState } from "react"
-import Link from "next/link"
-import { Search, Plus, Phone, Building, User, Edit, Trash2, Users, GraduationCap, Bell, UserPlus, MoreHorizontal, Eye, Crown, Briefcase, LogOut, Mail } from 'lucide-react'
+import {
+  Search,
+  Plus,
+  Phone,
+  Mail,
+  Edit,
+  Trash2,
+  MoreHorizontal,
+  Eye,
+  Crown,
+  Briefcase,
+  GraduationCap,
+  User,
+} from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
@@ -17,6 +29,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Sidebar } from "@/components/sidebar"
 
 interface Contact {
   id: number
@@ -178,16 +191,6 @@ const departments = [
 const contactRoles = ["Todos", "Estudiante", "Profesor", "Administrativo", "Directivo"]
 const statusOptions = ["Todos", "Activo", "Inactivo"]
 
-const sidebarItems = [
-  { icon: Phone, label: "Agenda telefónica", active: true, href: "/" },
-  { icon: Users, label: "Usuarios", active: false, href: "/usuarios" },
-  { icon: Building, label: "Grupos", active: false, href: "/grupos" },
-  { icon: GraduationCap, label: "Carreras", active: false, href: "/carreras" },
-  { icon: User, label: "Perfil", active: false, href: "/perfil" },
-  { icon: Bell, label: "Notificación", active: false, href: "/notificaciones" },
-  { icon: UserPlus, label: "Invitación", active: false, href: "/invitaciones" },
-]
-
 export default function AgendaPage() {
   const [contacts, setContacts] = useState<Contact[]>(initialContacts)
   const [searchTerm, setSearchTerm] = useState("")
@@ -317,44 +320,10 @@ export default function AgendaPage() {
     return status === "Activo" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
   }
 
-  const handleLogout = () => {
-    console.log("Cerrando sesión...")
-  }
-
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
-      <div className="w-64 bg-gradient-to-b from-green-500 to-green-600 text-white flex flex-col">
-        <div className="p-4 border-b border-green-400">
-          <h2 className="text-lg font-semibold">Agenda UML</h2>
-        </div>
-
-        <nav className="flex-1 p-2">
-          {sidebarItems.map((item, index) => (
-            <Link
-              key={index}
-              href={item.href}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors mb-1 ${
-                item.active ? "bg-white/20 text-white font-medium" : "text-green-100 hover:bg-white/10 hover:text-white"
-              }`}
-            >
-              <item.icon className="w-4 h-4" />
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-
-        {/* Logout Button */}
-        <div className="p-2 border-t border-green-400">
-          <button
-            onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors text-green-100 hover:bg-red-500/20 hover:text-white"
-          >
-            <LogOut className="w-4 h-4" />
-            Cerrar Sesión
-          </button>
-        </div>
-      </div>
+      <Sidebar />
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
