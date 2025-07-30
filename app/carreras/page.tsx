@@ -4,14 +4,35 @@ import type React from "react"
 
 import { useState } from "react"
 import Link from "next/link"
-import { Plus, Phone, Building, User, Users, GraduationCap, Bell, UserPlus, LogOut, Award } from "lucide-react"
+import {
+  Search,
+  Plus,
+  Edit,
+  Trash2,
+  Users,
+  GraduationCap,
+  MoreHorizontal,
+  Eye,
+  BookOpen,
+  Award,
+  Phone,
+  Building,
+  User,
+  Bell,
+  UserPlus,
+  LogOut,
+} from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Textarea } from "@/components/ui/textarea"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 interface CareerSection {
   id: number
@@ -341,6 +362,10 @@ export default function CareersPage() {
     setCareerSections(careerSections.filter((section) => section.id !== id))
   }
 
+  const handleLogout = () => {
+    console.log("Cerrando sesión...")
+  }
+
   const getFacultyColor = (faculty: string) => {
     const colors = {
       Ingeniería: "bg-blue-100 text-blue-800 border-blue-200",
@@ -367,8 +392,25 @@ export default function CareersPage() {
     return colors[year as keyof typeof colors] || "bg-gray-100 text-gray-800 border-gray-200"
   }
 
-  const handleLogout = () => {
-    console.log("Cerrando sesión...")
+  // Componente para mostrar avatares de maestros
+  function TeachersAvatarGroup({ teachers }: { teachers: string[] }) {
+    return (
+      <div className="flex -space-x-2">
+        {teachers.map((teacher, index) => (
+          <Avatar key={index} className="w-6 h-6 border-2 border-white">
+            <AvatarImage src="/placeholder.svg" />
+            <AvatarFallback className="bg-blue-100 text-blue-700 text-xs">
+              {teacher
+                .split(" ")
+                .map((n) => n[0])
+                .join("")
+                .toUpperCase()
+                .slice(0, 2)}
+            </AvatarFallback>
+          </Avatar>
+        ))}
+      </div>
+    )
   }
 
   // Calcular estadísticas generales
@@ -624,4 +666,160 @@ export default function CareersPage() {
         <div className="bg-white border-b border-gray-200 px-6 py-3">
           <div className="flex flex-wrap items-center gap-3">
             {/* Career Filter Pills */}
-            \
+            <div className="flex flex-wrap gap-2">
+              {careers.slice(0, 6).map((career) => (
+                <button
+                  key={career}
+                  onClick={() => setSelectedCareer(career)}
+                  className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                    selectedCareer === career
+                      ? "bg-green-500 text-white"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  }`}
+                >
+                  {career}
+                </button>
+              ))}
+            </div>
+
+            {/* Year Filter */}
+            <Select value={selectedYear} onValueChange={setSelectedYear}>
+              <SelectTrigger className="w-32">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {studentYears.map((year) => (
+                  <SelectItem key={year} value={year}>
+                    {year === "Año" ? "Año" : `${year} año`}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            {/* Search */}
+            <div className="relative ml-auto">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Input
+                placeholder="Buscar secciones o maestros..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 w-64"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 overflow-auto">
+          <div className="p-6">
+            <Card>
+              <CardContent className="p-0">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="border-b">
+                      <TableHead className="font-semibold">Carrera y Año</TableHead>
+                      <TableHead className="font-semibold">Facultad</TableHead>
+                      <TableHead className="font-semibold">Maestros del Trimestre</TableHead>
+                      <TableHead className="font-semibold">Estudiantes</TableHead>
+                      <TableHead className="w-20"></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredSections.map((section) => (
+                      <TableRow key={section.id} className="hover:bg-gray-50">
+                        <TableCell>
+                          <div>
+                            <div className="font-medium text-gray-900">{section.careerName}</div>
+                            <div className="flex items-center gap-2 mt-1">
+                              <Badge variant="outline" className={`${getYearColor(section.year)} border text-xs`}>
+                                {section.year} Año
+                              </Badge>
+                              <Badge variant="outline" className="text-xs">
+                                {section.code}
+                              </Badge>
+                            </div>
+                            <div className="text-sm text-gray-500 max-w-xs truncate mt-1">{section.description}</div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className={`${getFacultyColor(section.faculty)} border`}>
+                            {section.faculty}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-2">
+                              <TeachersAvatarGroup teachers={section.trimesterTeachers} />
+                              <span className="text-xs text-gray-500">
+                                ({section.trimesterTeachers.length} maestros)
+                              </span>
+                            </div>
+                            <div className="space-y-1">
+                              {section.trimesterTeachers.map((teacher, index) => (
+                                <div key={index} className="text-xs text-gray-600 flex items-center gap-1">
+                                  <BookOpen className="w-3 h-3" />
+                                  {teacher}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <Users className="w-4 h-4 text-blue-600" />
+                            <span className="text-lg font-semibold text-gray-900">{section.studentCount}</span>
+                            <span className="text-sm text-gray-500">estudiantes</span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="sm">
+                                <MoreHorizontal className="w-4 h-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem>
+                                <Eye className="w-4 h-4 mr-2" />
+                                Ver Detalles
+                              </DropdownMenuItem>
+                              <DropdownMenuItem>
+                                <Users className="w-4 h-4 mr-2" />
+                                Ver Estudiantes
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => handleEdit(section)}>
+                                <Edit className="w-4 h-4 mr-2" />
+                                Editar
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => handleDelete(section.id)} className="text-red-600">
+                                <Trash2 className="w-4 h-4 mr-2" />
+                                Eliminar
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+
+                {filteredSections.length === 0 && (
+                  <div className="text-center py-12">
+                    <GraduationCap className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">No se encontraron secciones</h3>
+                    <p className="text-gray-600">Intenta ajustar los filtros de búsqueda o crea una nueva sección.</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Results Counter */}
+            <div className="mt-4 text-sm text-gray-600">
+              Mostrando {filteredSections.length} de {careerSections.length} secciones
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
